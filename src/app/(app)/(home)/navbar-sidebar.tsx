@@ -10,9 +10,6 @@ SheetTitle,
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 
-
-
-
 interface NavbarItem {
     href: string;
     children: React.ReactNode;
@@ -42,7 +39,7 @@ export const NavbarSidebar = ({items, open, onOpenChange}:Props) => {
                 <ScrollArea className="flex flex-col overflow-y-auto h-full pb-2">
                     {items.map((item) => (
                         <Link
-                        onClick={() => onOpenChange(false)}
+                        onClick={()=>onOpenChange(false)}
                         className="w-full text-left p-4 hover:bg-black hover:text-white flex items items-center text-base font-medium"
                         key={item.href}
                         href={item.href}>

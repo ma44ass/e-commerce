@@ -8,9 +8,8 @@ import { redirect } from "next/navigation";
     const session = await caller.auth.session();
 
     if (session.user){
-        redirect ("/");}
-    
-
+        redirect ("/");
+    }
 
 const Page = async ()=> {
     const session = await caller.auth.session();

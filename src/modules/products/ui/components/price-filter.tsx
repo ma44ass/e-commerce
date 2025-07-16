@@ -1,4 +1,3 @@
-"use client";
 
 import { ChangeEvent } from "react";
 
@@ -13,7 +12,7 @@ interface PriceFilterProps {
 }
 
 export const formatAsCurrency = (value: string) =>{
-    const numericValue = value.replace(/[^0-9]/g,"");
+    const numericValue = value.replace(/[^0-9.]/g,"");
 
     const parts = numericValue.split(".");
     const formattedValue = parts[0] + (parts.length > 1 ? "." + parts[1]?.slice(0, 2) : "");
@@ -23,11 +22,11 @@ export const formatAsCurrency = (value: string) =>{
     const numberValue = parseFloat(formattedValue);
     if(isNaN(numberValue)) return "";
 
-    return new Intl.NumberFormat("en-US" , {
+    return new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
         minimumFractionDigits: 0,
-        maximumSignificantDigits: 2,
+        maximumFractionDigits: 2,
     }).format(numberValue);
 }
 
@@ -54,10 +53,10 @@ export const PriceFilter = ({
                     Minimum Price
                 </Label>
                 <Input
-                  type="text"
-                  placeholder="$0"
-                  value={minPrice ? formatAsCurrency(minPrice) : ""}
-                  onChange={handleMinPriceChange}
+                    type="text"
+                    placeholder="$0"
+                    value={minPrice ? formatAsCurrency(minPrice) : ""}
+                    onChange={handleMinPriceChange}
                 />
             </div>
             <div className=" flex flex-col gap-2">
@@ -65,10 +64,10 @@ export const PriceFilter = ({
                     Maximum Price
                 </Label>
                 <Input
-                  type="text"
-                  placeholder="∞"
-                  value={maxPrice ? formatAsCurrency(maxPrice) : ""}
-                  onChange={handleMaxPriceChange}
+                    type="text"
+                    placeholder="∞"
+                    value={maxPrice ? formatAsCurrency(maxPrice) : ""}
+                    onChange={handleMaxPriceChange}
                 />
             </div>
 

@@ -1,15 +1,13 @@
 "use client";
+import Link from "next/link";
+import { useState, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-import { useState } from "react";
-import { useRef } from "react";
-import { useDropdownPosition } from "./use-dropdown-position";
 import { SubcategoryMenu } from "./subcategoryMenu";
-
-import Link from "next/link";
 import { CategoriesGetManyOutput } from "@/modules/categories/types";
+
 
 interface Props {
     category: CategoriesGetManyOutput[1];
@@ -22,7 +20,7 @@ export const CategoryDropdown = ({category,isActive,isNavigationHovered}: Props)
 
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
-    const {getDropDownPosition} = useDropdownPosition(dropdownRef);
+
 
     const onMouseEnter = () => {
         if (category.subcategories) {setIsOpen(true);
@@ -31,7 +29,6 @@ export const CategoryDropdown = ({category,isActive,isNavigationHovered}: Props)
 
     const onMouseLeave = () => setIsOpen(false);
 
-    const dropdownPosition = getDropDownPosition();
 
     //Mobile improvments:
     // const toggleDropDown = () => {
@@ -49,7 +46,7 @@ export const CategoryDropdown = ({category,isActive,isNavigationHovered}: Props)
         onMouseLeave={onMouseLeave}
         //onClick={toggleDropDown}
         >
-        
+
 
         <div className="relative">
             <Button
@@ -64,7 +61,7 @@ export const CategoryDropdown = ({category,isActive,isNavigationHovered}: Props)
                     >
                     {category.name}
                     </Link>
-                    
+
                 </Button>
 
                 {category.subcategories && category.subcategories.length > 0 &&(
@@ -79,7 +76,6 @@ export const CategoryDropdown = ({category,isActive,isNavigationHovered}: Props)
         <SubcategoryMenu
         category={category}
         isOpen={isOpen}
-        position={dropdownPosition}
         />
     </div>
 

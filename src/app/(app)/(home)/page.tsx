@@ -17,7 +17,7 @@ interface Props {
 const Page = async ({searchParams}: Props) => {
     const filters = await loadProductFilters(searchParams);
 
-    console.log(JSON.stringify(filters), "this is from rsc")
+    //console.log(JSON.stringify(filters), "this is from rsc")
 
     const queryClient = getQueryClient();
     void queryClient.prefetchInfiniteQuery(trpc.products.getMany.infiniteQueryOptions({

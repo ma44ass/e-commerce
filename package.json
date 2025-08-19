@@ -2,6 +2,7 @@
   "name": "e-commerce",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,7 +12,6 @@
     "db:fresh": "payload migrate:fresh",
     "db:seed": "bun run src/seed.ts"
   },
-  "type": "module",
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
     "@payloadcms/db-mongodb": "3.47.0",

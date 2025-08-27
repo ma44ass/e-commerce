@@ -45,11 +45,10 @@ export const SearchInput = ({disabled}:Props) => {
                 asChild
                 variant="elevated"
                 >
-                    <Link href ="/library">
-                    <BookmarkCheckIcon />
-                    Library
-
-                    </Link>
+                    <Link prefetch href ="/library">
+                        <BookmarkCheckIcon />
+                            Library
+                        </Link>
                 </Button>
             )}
         </div>

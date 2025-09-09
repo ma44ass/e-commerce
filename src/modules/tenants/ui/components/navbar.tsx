@@ -42,9 +42,9 @@ export const Navbar = ({slug}: Props) => {
                 {data.image?.url && (
                     <Image
                     src={data.image.url}
-                    width={32}
-                    height={32}
-                    className="rounded-full border sshrink-0 size-[32px}]"
+                    width={55}
+                    height={55}
+                    className="rounded-full border-2 border-gray-700 shrink-0 size-[40px}]"
                     alt={slug}
                     />
                 )}

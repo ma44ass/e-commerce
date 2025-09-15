@@ -7,9 +7,57 @@ import {baseProcedure, createTRPCRouter, protectedProcedure } from "@/trpc/init"
 import { TRPCError } from "@trpc/server";
 import { CheckoutMetadata, ProductMetadata } from "../types";
 import { stripe } from "@/lib/stripe";
+import { PLATFORM_FEE_PERCENTAGE } from "@/constants";
 
 
 export const checkoutRouter = createTRPCRouter({
+    verify: protectedProcedure
+        .mutation(async ({ctx}) => {
+            const user = await ctx.db.findByID({
+                collection:"users",
+                id: ctx.session.user.id,
+                depth: 0, // use.tenants[0].tenant is going to be a string (tenant ID)
+            });
+
+            if(!user){
+                throw new TRPCError({
+                    code : "NOT_FOUND",
+                    message: "User not found",
+                });
+            }
+
+            const tenantId = user.tenants?.[0]?.tenant as string; // this is an id because of depth: 0;
+            const tenant= await ctx.db.findByID({
+                collection: "tenants",
+                id: tenantId,
+            });
+
+            if(!tenant){
+                throw new TRPCError({
+                    code: "NOT_FOUND",
+                    message : "Tenant not found",
+                });
+            }
+
+            const accountLink = await stripe.accountLinks.create({
+                account: tenant.stripeAccountId,
+                refresh_url: `${process.env.NEXT_PUBLIC_API_URL!}/admin`,
+                return_url: `${process.env.NEXT_PUBLIC_API_URL!}/admin`,
+                type: "account_onboarding",
+            });
+
+            if(!accountLink.url){
+                throw new TRPCError({
+                    code : "BAD_REQUEST",
+                    message: "Failed to create verfication link"
+                });
+            }
+
+            return {
+                url: accountLink.url
+            }
+
+        }),
     purchase: protectedProcedure
             .input(
                 z.object({
@@ -61,7 +109,13 @@ export const checkoutRouter = createTRPCRouter({
                     })
                 }
 
-                //TODO: throw error is stripe details is not submitted
+                if(!tenant.stripeDetailsSubmitted){
+                    throw new TRPCError({
+                        code:"BAD_REQUEST",
+                        message :"Tenant not allowed to sell products",
+                    })
+
+                }
 
                 const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[]=
                     products.docs.map((product) => ({
@@ -81,6 +135,12 @@ export const checkoutRouter = createTRPCRouter({
                         }
                     }));
 
+                    const totalAmount = products.docs.reduce(
+                        (acc, item) => acc + item.price * 100,
+                        0
+                    );
+                    const platformFeeAmount = Math.round(totalAmount * PLATFORM_FEE_PERCENTAGE / 100);
+
                 const checkout = await stripe.checkout.sessions.create({
                     customer_email: ctx.session.user.email,
                     success_url: `${process.env.NEXT_PUBLIC_API_URL}/tenants/${input.tenantSlug}/checkout?success=true`,
@@ -92,7 +152,12 @@ export const checkoutRouter = createTRPCRouter({
                     },
                     metadata: {
                         userId: ctx.session.user.id,
-                    } as CheckoutMetadata
+                    } as CheckoutMetadata,
+                    payment_intent_data:{
+                        application_fee_amount: platformFeeAmount,
+                        }
+                    }, {
+                    stripeAccount: tenant.stripeAccountId,
                 });
 
                 if(!checkout.url){

@@ -138,10 +138,8 @@ const categories = [
     },
 ]
 
-
 const seed = async () => {
     const payload = await getPayload ({config});
-
 
     const adminAccount = await stripe.accounts.create({})
     //create admin tenant:
@@ -154,8 +152,6 @@ const seed = async () => {
             stripeAccountId: adminAccount.id,
         },
     })
-
-    
 
     //create admin user:
     await payload.create ({

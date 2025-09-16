@@ -6,6 +6,8 @@ import { getQueryClient, trpc } from "@/trpc/server";
 
 import { ProductListView } from "@/modules/products/ui/views/product-list-view";
 import { loadProductFilters } from "@/modules/products/search-Params";
+import { Suspense } from "react";
+import { ProductViewSkeleton } from "@/modules/products/ui/views/product-view";
 
 
 
@@ -28,7 +30,9 @@ const Page = async ( {params, searchParams}: Props) => {
 
     return (
         <HydrationBoundary state={dehydrate(queryClient)}>
-            <ProductListView tenantSlug={slug}  narrowView/>
+            <Suspense fallback={ <ProductViewSkeleton/> }>
+                <ProductListView tenantSlug={slug}  narrowView/>
+            </Suspense>
         </HydrationBoundary>
     );
 

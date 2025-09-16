@@ -39,7 +39,7 @@ export const authRouter = createTRPCRouter({
         }
 
         const account = await stripe.accounts.create({});
-        
+
         if(!account) {
             throw new TRPCError({
                 code:"BAD_REQUEST",

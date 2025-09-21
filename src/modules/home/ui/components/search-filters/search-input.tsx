@@ -1,5 +1,5 @@
-"use client";
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 
@@ -12,15 +12,28 @@ import { Input } from "@/components/ui/input";
 import { CategoriesSidebar } from "./categories-sidebar";
 
 
+
 interface Props {
     disabled?:boolean;
+    defaultValue?: string | undefined;
+    onChange?: (value: string) => void;
 };
 
-export const SearchInput = ({disabled}:Props) => {
+export const SearchInput = ({disabled, defaultValue, onChange}:Props) => {
+    
+    const[searchValue, setSearchValue] = useState(defaultValue || "");
     const [isSideBarOpen, setIsSideBarOpen] = useState(false);
 
     const trpc = useTRPC();
     const session = useQuery(trpc.auth.session.queryOptions());
+
+    useEffect(() => {
+        const timeoutId = setTimeout(()=>{
+            onChange?.(searchValue);
+        },500);
+
+        return () => clearTimeout(timeoutId)
+    },[searchValue, onChange])
 
     return (
         <div className="flex flex-items-center gap-2 w-full">
@@ -30,7 +43,10 @@ export const SearchInput = ({disabled}:Props) => {
                 <Input
                 className="pl-8"
                 placeholder="Search products"
-                disabled={disabled}/>
+                disabled={disabled}
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                />
             </div>
             <Button
             variant="elevated"

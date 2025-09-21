@@ -8,6 +8,8 @@ SheetTitle,
 } from "@/components/ui/sheet"
 
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { useTRPC } from "@/trpc/client";
+import { useQuery } from "@tanstack/react-query";
 
 
 interface NavbarItem {
@@ -22,6 +24,8 @@ interface Props {
 }
 
 export const NavbarSidebar = ({items, open, onOpenChange}:Props) => {
+        const trpc =useTRPC();
+        const session = useQuery(trpc.auth.session.queryOptions());
     return (
         <Sheet
         open={open}
@@ -30,14 +34,43 @@ export const NavbarSidebar = ({items, open, onOpenChange}:Props) => {
             side="left"
             className="p-0 transition-none"
             >
-                <SheetHeader className="p-4 border-b">
+                <SheetHeader className="p-4">
                         <SheetTitle>
                             Menu
                         </SheetTitle>
                 </SheetHeader>
 
                 <ScrollArea className="flex flex-col overflow-y-auto h-full pb-2">
-                    {items.map((item) => (
+                    {session.data?.user ? (
+                            <div className="border-t">
+                                <Link
+                                    onClick={() => onOpenChange(false)}
+                                    href="/admin"
+                                    className="w-full text-left p-4  hover:bg-pink-400 hover:text-white flex items-center text-base font-medium">Dashboard
+                                    </Link>
+                                <Link
+                                    onClick={() => onOpenChange(false)}
+                                    href="/library"
+                                    className="w-full text-left p-4  hover:bg-pink-400 hover:text-white flex items-center text-base font-medium">Library
+                                    </Link>
+                            </div>
+                            ) : (
+                            <div className="border-b">
+                                <Link
+                                onClick={() => onOpenChange(false)}
+                                href="/sign-in"
+                                className="w-full text-left p-4  hover:bg-pink-400 hover:text-white flex items-center text-base font-medium">Log in
+                                </Link>
+                                <Link
+                                onClick={() => onOpenChange(false)}
+                                href="/sign-up"
+                                className="w-full text-left p-4  hover:bg-pink-400 hover:text-white flex items-center text-base font-medium">Start selling
+                                </Link>
+                            </div>
+                        )
+                        }
+                        <div className="border-t">
+                            {items.map((item) => (
                         <Link
                         onClick={()=>onOpenChange(false)}
                         className="w-full text-left p-4 hover:bg-black hover:text-white flex items items-center text-base font-medium"
@@ -46,16 +79,9 @@ export const NavbarSidebar = ({items, open, onOpenChange}:Props) => {
                             {item.children}
                         </Link>
                     ))}
-                    <div className="border-t">
-                        <Link
-                        onClick={() => onOpenChange(false)}
-                        href="/sign-in"
-                        className="w-full text-left p-4  hover:bg-pink-400 hover:text-white flex items-center text-base font-medium">Log in</Link>
-                        <Link
-                        onClick={() => onOpenChange(false)}
-                        href="/sign-up"
-                        className="w-full text-left p-4  hover:bg-pink-400 hover:text-white flex items-center text-base font-medium">Start selling</Link>
                     </div>
+
+                    
 
                 </ScrollArea>
             </SheetContent>

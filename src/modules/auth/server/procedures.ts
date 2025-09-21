@@ -16,7 +16,6 @@ export const authRouter = createTRPCRouter({
         return session;
     }),
 
-
     register: baseProcedure
     .input(registerSchema)
     .mutation( async ({ input, ctx}) => {
